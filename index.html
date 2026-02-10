@@ -1,487 +1,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VENOME - Bio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <style>
-        /* --- RESET & FONTS --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Courier New', monospace;
-            /* HIDE DEFAULT CURSOR EVERYWHERE */
-            cursor: none !important; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SETU - Bio</title>
 
-        body {
-            background-color: #000;
-            color: white;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 1000px;
-        }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        /* --- CUSTOM MOUSE CURSOR --- */
-        #mouse-cursor {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 25px;
-            height: 25px;
-            pointer-events: none; /* Let clicks pass through */
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s ease; /* Smooth catch-up */
-            mix-blend-mode: difference; /* Cool inversion effect over white text */
-        }
+<style>
+*{
+    margin:0;padding:0;box-sizing:border-box;
+    font-family:'Courier New', monospace;
+    cursor:none !important;
+}
+body{
+    background:#000;color:#fff;
+    height:100vh;width:100vw;
+    overflow:hidden;
+    display:flex;justify-content:center;align-items:center;
+}
 
-        /* The Horizontal line of the crosshair */
-        #mouse-cursor::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: white;
-            box-shadow: 0 0 8px white; /* Glow */
-            transform: translateY(-50%);
-        }
+/* TOGGLE */
+.toggle{
+    position:fixed;
+    top:20px;left:20px;
+    z-index:999;
+    font-size:22px;
+    color:#ffd6e8;
+    cursor:pointer!important;
+}
 
-        /* The Vertical line of the crosshair */
-        #mouse-cursor::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            height: 100%;
-            width: 2px;
-            background: white;
-            box-shadow: 0 0 8px white; /* Glow */
-            transform: translateX(-50%);
-        }
+/* CURSOR */
+#mouse-cursor{
+    position:fixed;width:25px;height:25px;
+    pointer-events:none;z-index:9999;
+    transform:translate(-50%,-50%);
+}
+#mouse-cursor::before,#mouse-cursor::after{
+    content:'';position:absolute;
+    background:#ffd6e8;box-shadow:0 0 10px #ff9ecf;
+}
+#mouse-cursor::before{top:50%;left:0;width:100%;height:2px}
+#mouse-cursor::after{left:50%;top:0;width:2px;height:100%}
 
-        /* Animation when clicking */
-        .clicking {
-            transform: translate(-50%, -50%) scale(0.8) !important;
-        }
+/* VIDEO */
+#bg-video{
+    position:fixed;inset:0;
+    width:100%;height:100%;
+    object-fit:fill;z-index:-2;
+    filter:brightness(.55);
+}
 
-        /* --- VIDEO BACKGROUND --- */
-        #bg-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            object-fit: fill; 
-            filter: brightness(0.5); 
-        }
+/* FLOATING HEARTS */
+.heart{
+    position:fixed;
+    color:#ff9ecf;
+    font-size:14px;
+    animation:floatUp 6s linear infinite;
+    z-index:-1;
+}
+@keyframes floatUp{
+    from{transform:translateY(100vh);opacity:1}
+    to{transform:translateY(-10vh);opacity:0}
+}
 
-        /* --- CLICK TO ENTER OVERLAY --- */
-        #enter-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease;
-        }
+/* SAKURA */
+.sakura{
+    position:fixed;
+    top:-10px;
+    color:#ffd6e8;
+    font-size:12px;
+    animation:fall 8s linear infinite;
+}
+@keyframes fall{
+    to{transform:translateY(110vh) rotate(360deg)}
+}
 
-        #enter-text {
-            font-size: 20px;
-            font-weight: bold;
-            text-shadow: 0 0 15px white;
-            animation: pulse 2s infinite;
-        }
+/* ENTER */
+#enter-screen{
+    position:fixed;inset:0;
+    background:#000;
+    display:flex;justify-content:center;align-items:center;
+    z-index:1000;
+}
+#enter-text{
+    color:#ffd6e8;font-size:22px;
+    text-shadow:0 0 20px #ff9ecf;
+    animation:pulse 2s infinite;
+}
+@keyframes pulse{50%{opacity:.5}}
 
-        /* --- MAIN CONTENT WRAPPER --- */
-        #main-content {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1.5s ease;
-        }
+/* CARD */
+.card{
+    width:460px;padding:40px;
+    border-radius:30px;text-align:center;
+    background:linear-gradient(135deg,
+        rgba(255,182,213,.18),
+        rgba(255,255,255,.03));
+    backdrop-filter:blur(14px);
+    border:1px solid rgba(255,182,213,.4);
+    box-shadow:0 0 40px rgba(255,126,179,.4);
+    transform-style:preserve-3d;
+}
 
-        /* --- THE TRANSPARENT CARD --- */
-        .card {
-            background: linear-gradient(
-                135deg,
-                rgba(255, 255, 255, 0.03), 
-                rgba(255, 255, 255, 0)
-            );
-            backdrop-filter: blur(10px); 
-            -webkit-backdrop-filter: blur(10px);
-            
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-            
-            padding: 40px;
-            border-radius: 30px;
-            width: 450px;
-            text-align: center;
-            
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease;
-            
-            animation: popIn 1s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-        }
+/* PFP */
+.pfp{
+    width:130px;height:130px;border-radius:50%;
+    border:3px solid #ffd6e8;
+    box-shadow:0 0 40px #ff9ecf;
+}
 
-        /* --- 3D POP-OUT ELEMENTS --- */
-        .pfp-container {
-            transform: translateZ(50px);
-            margin-bottom: 15px;
-        }
+/* TEXT */
+.username{
+    font-size:42px;margin:10px 0;
+    color:#ffd6e8;
+    text-shadow:0 0 30px #ff9ecf;
+}
+.badges i{
+    margin:0 8px;
+    color:#ffd6e8;
+    text-shadow:0 0 15px #ff9ecf;
+}
+.description{margin:15px 0;font-weight:600}
 
-        .pfp {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.4); 
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-        }
+/* LINKS */
+.links a{
+    font-size:26px;margin:0 12px;
+    color:#ffd6e8;
+    transition:.3s;
+}
+.links a:hover{
+    transform:scale(1.4);
+    text-shadow:0 0 25px #ff9ecf;
+}
 
-        .username {
-            font-size: 38px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6); 
-            transform: translateZ(40px);
-            min-height: 42px;
-        }
-
-        .badges {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            font-size: 18px;
-            color: #fff;
-            transform: translateZ(35px);
-        }
-        
-        .badges i {
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            transition: transform 0.2s;
-        }
-        .badges i:hover {
-            transform: scale(1.3);
-        }
-
-        .description {
-            font-size: 14px;
-            color: #fff;
-            margin-bottom: 10px;
-            line-height: 1.6;
-            font-weight: 600;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            transform: translateZ(30px);
-            min-height: 60px; 
-        }
-
-        /* --- INFO ROW (Location & Views) --- */
-        .footer-info {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 25px;
-            transform: translateZ(35px);
-            
-            border-top: 1px solid rgba(255,255,255,0.05); 
-            padding-top: 15px;
-        }
-
-        .stat-item {
-            font-size: 13px;
-            color: #ddd;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-        }
-
-        .stat-item i {
-            color: #fff;
-        }
-
-        /* Animations */
-        .fa-location-dot { animation: floatIcon 2s infinite ease-in-out; }
-        .fa-eye { animation: pulseEye 3s infinite ease-in-out; }
-
-        /* --- SOCIAL LINKS --- */
-        .links {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-            transform: translateZ(60px);
-        }
-
-        .links a {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 26px;
-            text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .links a:hover {
-            transform: scale(1.3) translateY(-5px);
-            text-shadow: 0 0 25px white;
-            color: #fff;
-        }
-
-        /* --- WATERMARK --- */
-        .watermark {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            pointer-events: none;
-            font-weight: bold;
-            letter-spacing: 1px;
-            animation: watermarkGlow 3s infinite alternate;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes pulse {
-            0% { opacity: 0.6; text-shadow: 0 0 10px white; }
-            50% { opacity: 1; text-shadow: 0 0 20px white; }
-            100% { opacity: 0.6; text-shadow: 0 0 10px white; }
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.8) translateY(50px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        @keyframes watermarkGlow {
-            0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.2); opacity: 0.5; }
-            100% { text-shadow: 0 0 20px rgba(255, 255, 255, 1); opacity: 1; }
-        }
-        
-        @keyframes floatIcon {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-            100% { transform: translateY(0); }
-        }
-
-        @keyframes pulseEye {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; text-shadow: 0 0 8px white; }
-            100% { opacity: 0.7; }
-        }
-
-        /* TYPING CURSOR (The line after text) */
-        .type-cursor::after {
-            content: '|';
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-    </style>
+/* DARK MODE */
+body.dark{
+    background:#05010a;
+}
+</style>
 </head>
+
 <body>
 
-    <!-- CUSTOM MOUSE CURSOR -->
-    <div id="mouse-cursor"></div>
+<div class="toggle" id="toggle"><i class="fa-solid fa-moon"></i></div>
+<div id="mouse-cursor"></div>
 
-    <video autoplay muted loop id="bg-video">
-        <source src="background.mp4" type="video/mp4">
-    </video>
+<video autoplay muted loop id="bg-video">
+<source src="background.mp4" type="video/mp4">
+</video>
 
-    <div id="enter-screen">
-        <div id="enter-text">click to enter...</div>
-    </div>
+<audio id="music" loop>
+<source src="music.mp3" type="audio/mpeg">
+</audio>
 
-    <div id="main-content">
-        <div class="card" id="tilt-card">
-            
-            <div class="pfp-container">
-                <img src="pfp.gif" alt="Profile" class="pfp">
-            </div>
-            
-           
-            <h1 class="username"><span id="type-username"></span><span class="type-cursor"></span></h1>
-            
-            <div class="badges">
-                <i class="fa-solid fa-crown" title="Owner"></i>
-                <i class="fa-solid fa-code" title="Developer"></i>
-                <i class="fa-solid fa-skull" title="Member"></i>
-                <i class="fa-solid fa-circle-check" title="Verified"></i>
-            </div>
+<div id="enter-screen">
+<div id="enter-text">click to enter ✿</div>
+</div>
 
-            <div class="description" id="type-desc"></div>
+<div class="card" id="card" style="display:none">
+<img src="pfp.gif" class="pfp">
+<h1 class="username">SETU</h1>
 
-            
-            <div class="footer-info">
-                <div class="stat-item">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span id="type-location"></span>
-                </div>
-                <div class="stat-item">
-                    <i class="fa-solid fa-eye"></i>
-                    <span id="view-counter">14,928</span>
-                </div>
-            </div>
+<div class="badges">
+<i class="fa-solid fa-heart"></i>
+<i class="fa-solid fa-star"></i>
+<i class="fa-solid fa-wand-magic-sparkles"></i>
+<i class="fa-solid fa-circle-check"></i>
+</div>
 
-            <div class="links">
-                <a href="https://github.com" target="_blank"><i class="fa-brands fa-github"></i></a>
-                <a href="https://discord.gg/skeleton-army" target="_blank"><i class="fa-brands fa-discord"></i></a>
-                <a href="https://www.instagram.com/venome9524?igsh=MTdlZnc0dmxhenZpNg==_.adolf.01/" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" target="_blank"><i class="fa-solid fa-plus"></i></a>
-            </div>
-        </div>
-    </div>
+<div class="description">
+꒰ soft heart • strong mind ꒱ <br>
+✨ dreaming • glowing • creating ✨
+</div>
 
-    <div class="watermark">made by VENOME.devs</div>
+<div class="links">
+<a href="#"><i class="fa-brands fa-github"></i></a>
+<a href="#"><i class="fa-brands fa-discord"></i></a>
+<a href="#"><i class="fa-brands fa-instagram"></i></a>
+</div>
+</div>
 
-    <script>
-        const enterScreen = document.getElementById('enter-screen');
-        const mainContent = document.getElementById('main-content');
-        const video = document.getElementById('bg-video');
-        const card = document.getElementById('tilt-card');
-        const mouseCursor = document.getElementById('mouse-cursor');
+<script>
+const cursor=document.getElementById('mouse-cursor');
+document.addEventListener('mousemove',e=>{
+cursor.style.left=e.clientX+'px';
+cursor.style.top=e.clientY+'px';
+});
 
-        
-        document.addEventListener('mousemove', (e) => {
-            // Move the custom cursor to mouse position
-            mouseCursor.style.left = e.clientX + 'px';
-            mouseCursor.style.top = e.clientY + 'px';
-        });
+/* ENTER */
+document.getElementById('enter-screen').onclick=()=>{
+document.getElementById('enter-screen').style.display='none';
+document.getElementById('card').style.display='block';
+document.getElementById('music').play();
+}
 
-        document.addEventListener('mousedown', () => {
-            mouseCursor.classList.add('clicking');
-        });
+/* HEARTS */
+setInterval(()=>{
+const h=document.createElement('div');
+h.className='heart';
+h.innerHTML='♡';
+h.style.left=Math.random()*100+'vw';
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),6000);
+},400);
 
-        document.addEventListener('mouseup', () => {
-            mouseCursor.classList.remove('clicking');
-        });
+/* SAKURA */
+setInterval(()=>{
+const s=document.createElement('div');
+s.className='sakura';
+s.innerHTML='❀';
+s.style.left=Math.random()*100+'vw';
+document.body.appendChild(s);
+setTimeout(()=>s.remove(),8000);
+},600);
 
-        
-        const usernameText = "VENOME";
-        const descLines = ["未来を変えるのは、いつだって自分だ", '"- One Piece"'];
-        const locationText = "ノーアイデア"; 
- 
+/* TOGGLE */
+document.getElementById('toggle').onclick=()=>{
+document.body.classList.toggle('dark');
+};
+</script>
 
-        
-        function typeWriter(elementId, text, speed, callback) {
-            let i = 0;
-            let element = document.getElementById(elementId);
-            element.innerHTML = "";
-            
-            function type() {
-                if (i < text.length) {
-                    element.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, speed);
-                } else {
-                    if(element.nextElementSibling && element.nextElementSibling.classList.contains('type-cursor')) {
-                        element.nextElementSibling.style.display = 'none';
-                    }
-                    if (callback) callback();
-                }
-            }
-            type();
-        }
-
-        
-        function typeDescription(callback) {
-            let descElement = document.getElementById('type-desc');
-            descElement.innerHTML = "";
-            let lineIndex = 0;
-            
-            function typeLine() {
-                if (lineIndex < descLines.length) {
-                    let currentLine = descLines[lineIndex];
-                    let charIndex = 0;
-                    
-                    let lineDiv = document.createElement('div');
-                    lineDiv.classList.add('type-cursor'); // Use new cursor class
-                    descElement.appendChild(lineDiv);
-                    
-                    function typeChar() {
-                        if (charIndex < currentLine.length) {
-                            lineDiv.textContent += currentLine.charAt(charIndex);
-                            charIndex++;
-                            setTimeout(typeChar, 50); 
-                        } else {
-                            lineDiv.classList.remove('type-cursor');
-                            lineIndex++;
-                            setTimeout(typeLine, 200); 
-                        }
-                    }
-                    typeChar();
-                } else {
-                    if (callback) callback();
-                }
-            }
-            typeLine();
-        }
-
-        
-        enterScreen.addEventListener('click', () => {
-            enterScreen.style.opacity = '0';
-            setTimeout(() => {
-                enterScreen.style.display = 'none';
-                mainContent.style.display = 'flex';
-                
-                setTimeout(() => {
-                    mainContent.style.opacity = '1';
-                    
-                    typeWriter('type-username', usernameText, 150, () => {
-                        typeDescription(() => {
-                            document.getElementById('type-location').classList.add('type-cursor');
-                            typeWriter('type-location', locationText, 100, null);
-                        });
-                    });
-                    
-                }, 50);
-            }, 800);
-
-            video.muted = false;
-            video.volume = 0.5;
-            video.play();
-        });
-
-        
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left; 
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = ((y - centerY) / centerY) * -15; 
-            const rotateY = ((x - centerX) / centerX) * 15;
-
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
-        });
-    </script>
 </body>
-
-</html>
+    </html>
